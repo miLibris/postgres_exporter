@@ -19,6 +19,12 @@ jobs:
 
       - name: Build
         run: go build -v ./...
+      
+      - name: Install make
+        run: apt-get install make
+        
+      - name: make
+        run: make build
 
       - name: Test
         run: go test -v ./...
