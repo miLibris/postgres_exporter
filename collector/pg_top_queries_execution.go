@@ -62,12 +62,6 @@ var (
 		FROM pg_stat_statements
 		JOIN pg_database
 			ON pg_database.id = pg_stat_statements.dbid
-		WHERE
-		total_time > (
-			SELECT percentile_cont(0.1)
-				WITHIN GROUP (ORDER BY total_time)
-				FROM pg_stat_statements
-			)
 		ORDER BY total_seconds DESC
 		LIMIT 100;`
 )
