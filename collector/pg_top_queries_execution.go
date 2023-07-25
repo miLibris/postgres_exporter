@@ -26,33 +26,31 @@ var (
 	statTotalExecutionTime = prometheus.NewDesc(
 		prometheus.BuildFQName(namespace, statTopQueriesExecutionTime, "total_seconds"),
 		"Total time spent in the statement, in milliseconds",
-		[]string{"queryid", "datname", "user"},
+		[]string{"queryid"},
 		prometheus.Labels{},
 	)
 	statMinimumExecutionTime = prometheus.NewDesc(
 		prometheus.BuildFQName(namespace, statTopQueriesExecutionTime, "min_time_seconds"),
 		"Minimum time spent in the statement, in milliseconds",
-		[]string{"queryid", "datname", "user"},
+		[]string{"queryid"},
 		prometheus.Labels{},
 	)
 
 	statMaximumExecutionTime = prometheus.NewDesc(
 		prometheus.BuildFQName(namespace, statTopQueriesExecutionTime, "max_time_seconds"),
 		"Maximum time spent in the statement, in milliseconds",
-		[]string{"queryid", "datname", "user"},
+		[]string{"queryid"},
 		prometheus.Labels{},
 	)
 
 	statMeanExecutionTime = prometheus.NewDesc(
 		prometheus.BuildFQName(namespace, statTopQueriesExecutionTime, "mean_time"),
 		"Mean time spent in the statement, in milliseconds",
-		[]string{"queryid", "datname", "user"},
+		[]string{"queryid"},
 		prometheus.Labels{},
 	)
 
 	statTopQueryExecutionQuery = `SELECT
-		pg_get_userbyid(userid) as user,
-		pg_database.datname,
 		pg_stat_statements.queryid,
 		pg_stat_statements.mean_time / 1000.0 as mean_time,
 		pg_stat_statements.total_time / 1000.0 as total_seconds,
@@ -60,8 +58,6 @@ var (
 		pg_stat_statements.max_time / 1000.0 as max_time_seconds,
 		pg_stat_statements.calls
 		FROM pg_stat_statements
-		JOIN pg_database
-			ON pg_database.id = pg_stat_statements.dbid
 		ORDER BY total_seconds DESC
 		LIMIT 100;`
 )
@@ -84,16 +80,6 @@ func (PGStatTopQueriesExecutionTime) Update(ctx context.Context, instance *insta
 			return err
 		}
 
-		userLabel := "unknown"
-		if user.Valid {
-			userLabel = user.String
-		}
-
-		datnameLabel := "unknown"
-		if datName.Valid {
-			datnameLabel = datName.String
-		}
-
 		queryIdLabel := "unknown"
 		if queryid.Valid {
 			queryIdLabel = queryid.String
@@ -107,7 +93,7 @@ func (PGStatTopQueriesExecutionTime) Update(ctx context.Context, instance *insta
 			statTotalExecutionTime,
 			prometheus.CounterValue,
 			totalSecondsMetric,
-			userLabel, datnameLabel, queryIdLabel,
+			queryIdLabel,
 		)
 
 		meanTimeSecondsMetric := 0.0
@@ -118,7 +104,7 @@ func (PGStatTopQueriesExecutionTime) Update(ctx context.Context, instance *insta
 			statMeanExecutionTime,
 			prometheus.CounterValue,
 			meanTimeSecondsMetric,
-			userLabel, datnameLabel, queryIdLabel,
+			queryIdLabel,
 		)
 
 		minTimeSecondsMetric := 0.0
@@ -129,7 +115,7 @@ func (PGStatTopQueriesExecutionTime) Update(ctx context.Context, instance *insta
 			statMinimumExecutionTime,
 			prometheus.CounterValue,
 			minTimeSecondsMetric,
-			userLabel, datnameLabel, queryIdLabel,
+			queryIdLabel,
 		)
 
 		maxTimeSecondsMetric := 0.0
@@ -140,7 +126,7 @@ func (PGStatTopQueriesExecutionTime) Update(ctx context.Context, instance *insta
 			statMaximumExecutionTime,
 			prometheus.CounterValue,
 			maxTimeSecondsMetric,
-			userLabel, datnameLabel, queryIdLabel,
+			queryIdLabel,
 		)
 
 		callsMetric := 0.0
@@ -152,7 +138,7 @@ func (PGStatTopQueriesExecutionTime) Update(ctx context.Context, instance *insta
 			statTotalExecutionTime,
 			prometheus.CounterValue,
 			callsMetric,
-			userLabel, datnameLabel, queryIdLabel,
+			queryIdLabel,
 		)
 	}
 	return nil
