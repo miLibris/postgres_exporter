@@ -21,13 +21,17 @@ jobs:
         run: go build -v ./...
       
       - name: Install make
-        run: sudo apt-get install make -y
+        run: sudo apt-get install make locate -y
         
       - name: make
         run: make build
 
       - name: Test
         run: go test -v ./...
+        
+      - name: locate postgres_exporter
+        run: sudo updatedb && sudo locate postgres_exporter
+      
 
   release:
     name: Release
