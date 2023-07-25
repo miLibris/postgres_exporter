@@ -26,12 +26,6 @@ jobs:
       - name: make
         run: make build
         
-      - name: pwd
-        run: pwd
-
-      - name: Move binary
-        run: mv /home/runner/work/postgres_exporter/postgres_exporter/postgres_exporter ./
-        
       - name: Test
         run: go test -v ./...
 
