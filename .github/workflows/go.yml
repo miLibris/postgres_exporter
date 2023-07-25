@@ -26,6 +26,10 @@ jobs:
       - name: make
         run: make build
 
+      - name: Move binary
+        run: mv /go/src/app/postgres_exporter ./
+
+
       - name: Test
         run: go test -v ./...
 
@@ -54,8 +58,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: /go/src/app/postgres_exporter
-          # Vous devez également spécifier le type de contenu (Content-Type) de l'asset.
-          # Pour un binaire, vous pouvez généralement utiliser application/octet-stream.
+          asset_path: ./postgres_exporter
           asset_content_type: application/octet-stream
           asset_name: postgres_exporter
