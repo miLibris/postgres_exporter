@@ -96,7 +96,7 @@ func (PGStatTopQueriesExecutionTime) Update(ctx context.Context, instance *insta
 
 		queryLabel := "unknown"
 		if query.Valid {
-			queryIdLabel = query.String
+			queryLabel = query.String
 		}
 
 		userLabel := "unknown"
