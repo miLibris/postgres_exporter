@@ -66,7 +66,7 @@ var (
 			calls
 		FROM pg_stat_statements
 		ORDER BY total_seconds DESC
-		LIMIT 100;`
+		LIMIT 1;`
 )
 
 func (PGStatTopQueriesExecutionTime) Update(ctx context.Context, instance *instance, ch chan<- prometheus.Metric) error {
