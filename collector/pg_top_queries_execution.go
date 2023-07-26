@@ -50,6 +50,13 @@ var (
 		prometheus.Labels{},
 	)
 
+	statExecutedCalls = prometheus.NewDesc(
+		prometheus.BuildFQName(namespace, statTopQueriesExecutionTime, "calls"),
+		"Number of times executed",
+		[]string{"queryid"},
+		prometheus.Labels{},
+	)
+
 	statTopQueryExecutionQuery = `SELECT
 			queryid,
 			mean_time / 1000.0 as mean_time,
@@ -135,7 +142,7 @@ func (PGStatTopQueriesExecutionTime) Update(ctx context.Context, instance *insta
 		}
 
 		ch <- prometheus.MustNewConstMetric(
-			statTotalExecutionTime,
+			statExecutedCalls,
 			prometheus.CounterValue,
 			callsMetric,
 			queryIdLabel,
