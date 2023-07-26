@@ -53,13 +53,13 @@ var (
 	statExecutedCalls = prometheus.NewDesc(
 		prometheus.BuildFQName(namespace, statTopQueriesExecutionTime, "calls"),
 		"Number of times executed",
-		[]string{"queryid"},
+		[]string{"queryid", "query", "user"},
 		prometheus.Labels{},
 	)
 
 	statTopQueryExecutionQuery = `SELECT
 			queryid,
-			query
+			query,
 			pg_get_userbyid(userid) as user,
 			mean_time / 1000.0 as mean_time,
 			total_time / 1000.0 as total_seconds,
