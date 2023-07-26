@@ -4,6 +4,7 @@
 name: Build projet
 
 on:
+  workflow_dispatch:
   push:
     tags:
       - 'v*.*.*.*' 
