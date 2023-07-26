@@ -11,7 +11,7 @@ import (
 const statTopQueriesExecutionTime = "stat_top_queries"
 
 func init() {
-	registerCollector(statTopQueriesExecutionTime, true, NewPGStatTopQueriesExecutionTime)
+	registerCollector(statTopQueriesExecutionTime, defaultEnabled, NewPGStatTopQueriesExecutionTime)
 }
 
 type PGStatTopQueriesExecutionTime struct {
@@ -51,12 +51,12 @@ var (
 	)
 
 	statTopQueryExecutionQuery = `SELECT
-		pg_stat_statements.queryid,
-		pg_stat_statements.mean_time / 1000.0 as mean_time,
-		pg_stat_statements.total_time / 1000.0 as total_seconds,
-		pg_stat_statements.min_time / 1000.0 as min_time_seconds,
-		pg_stat_statements.max_time / 1000.0 as max_time_seconds,
-		pg_stat_statements.calls
+			queryid,
+			mean_time / 1000.0 as mean_time,
+			total_time / 1000.0 as total_seconds,
+			min_time / 1000.0 as min_time_seconds,
+			max_time / 1000.0 as max_time_seconds,
+			calls
 		FROM pg_stat_statements
 		ORDER BY total_seconds DESC
 		LIMIT 100;`
@@ -72,11 +72,11 @@ func (PGStatTopQueriesExecutionTime) Update(ctx context.Context, instance *insta
 	defer rows.Close()
 
 	for rows.Next() {
-		var user, datName, queryid sql.NullString
+		var queryid sql.NullString
 		var meanTime, totalSeconds, minTimeSeconds, maxTimeSeconds sql.NullFloat64
 		var calls sql.NullInt64
 
-		if err := rows.Scan(&user, &datName, &meanTime, &totalSeconds, &minTimeSeconds, &maxTimeSeconds, &calls); err != nil {
+		if err := rows.Scan(&queryid, &meanTime, &totalSeconds, &minTimeSeconds, &maxTimeSeconds, &calls); err != nil {
 			return err
 		}
 
